@@ -4,6 +4,8 @@ import axios from "axios";
 
 import signinImage from "../assets/signup.jpg";
 
+const cookies = new Cookies();
+
 const initialState = {
   fullName: "",
   username: "",
@@ -21,9 +23,51 @@ const Auth = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  /*
+  How the client and server communicate:
+  
+  Upon a submission,
+  get all the data from a form,
+  get the URL,
+  make a request to a backend,
+  get the data from the backend,
+  and store the data to cookies
+  */
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
+
+    // get all the data from a form
+    const { fullName, username, password, phoneNumber, avatarURL } = form;
+
+    // get the URL
+    const URL = "http://localhost:5000/auth";
+
+    // make a request to a backend, get the data from the backend
+    const {
+      data: { token, userId, hashedPassword },
+    } = await axios.post(`${URL}/${isSignup ? "signup" : "login"}`, {
+      username,
+      password,
+      fullName,
+      phoneNumber,
+      avatarURL,
+    });
+
+    // store the data to cookies
+    cookies.set("token", token);
+    cookies.set("username", username);
+    cookies.set("fullName", fullName);
+    cookies.set("userId", userId);
+
+    if (isSignup) {
+      cookies.set("phoneNumber", phoneNumber);
+      cookies.set("avatarURL", avatarURL);
+      cookies.set("hashedPassword", hashedPassword);
+    }
+
+    // reload the page, not rendering <Auth /> in App.jsx
+    window.location.reload();
+    // console.log(form);
   };
 
   const switchMode = () => {

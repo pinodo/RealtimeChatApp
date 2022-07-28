@@ -4,6 +4,7 @@ import { AddChannel } from "../assets";
 
 const TeamChannelList = ({ children, error = false, loading, type }) => {
   if (error) {
+    console.log(error);
     return type === "team" ? (
       <div className="team-channel-list">
         <p className="team-channel-list__message">

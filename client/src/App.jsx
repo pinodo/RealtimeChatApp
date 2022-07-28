@@ -7,11 +7,28 @@ import { ChannelListContainer, ChannelContainer, Auth } from "./components";
 
 import "./App.css";
 
-const apiKey = process.env.STREAM_API_KEY;
+const cookies = new Cookies();
+
+// client side - cannot process env -> in the .env file
+const apiKey = "";
+
+const authToken = cookies.get("token");
 
 const client = StreamChat.getInstance(apiKey);
 
-const authToken = false;
+if (authToken) {
+  client.connectUser(
+    {
+      id: cookies.get("userId"),
+      name: cookies.get("username"),
+      fullName: cookies.get("fullName"),
+      image: cookies.get("avatarURL"),
+      hashedPassword: cookies.get("hashedPassword"),
+      phoneNumber: cookies.get("phoneNumber"),
+    },
+    authToken
+  );
+}
 
 const App = () => {
   if (!authToken) return <Auth />;
